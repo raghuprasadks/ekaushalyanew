@@ -1,7 +1,7 @@
 # EKAUSHALYA
 Full-Stack Flipkart with Admin Dashboard & Paytm Payment Gateway.
 
-[Visit Now](https://flipkartwebs.herokuapp.com/) 🚀
+[Visit-shortly updated]
 
 ## 🖥️ Tech Stack
 **Frontend:**
