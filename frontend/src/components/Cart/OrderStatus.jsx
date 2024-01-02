@@ -7,6 +7,7 @@ import { clearErrors, getPaymentStatus, newOrder } from '../../actions/orderActi
 import Loader from '../Layouts/Loader';
 
 const OrderStatus = () => {
+    console.log("Order Status ###")
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -27,6 +28,9 @@ const OrderStatus = () => {
     }
 
     useEffect(() => {
+        console.log("use effect:##::loading",loading)
+        console.log("use effect:##::params",params)
+        console.log("use effect:##::txn ",txn)
         if (loading === false) {
             if(txn) {
                 if (txn.status === "TXN_SUCCESS") {
@@ -34,6 +38,8 @@ const OrderStatus = () => {
                         id: txn.id,
                         status: txn.status,
                     };
+                    console.log("new order ##",orderData)         
+                    
     
                     dispatch(newOrder(orderData));
     
@@ -49,6 +55,8 @@ const OrderStatus = () => {
     }, [loading])
 
     useEffect(() => {
+
+        console.log("orderLoading###",orderLoading)
         if (orderLoading === false) {
             if (order) {
                 enqueueSnackbar("Order Placed", { variant: "success" });
@@ -62,6 +70,7 @@ const OrderStatus = () => {
     }, [orderLoading])
 
     useEffect(() => {
+        console.log("useeffect:error###",error)
         if (error) {
             enqueueSnackbar(error, { variant: "error" });
             dispatch(clearErrors());

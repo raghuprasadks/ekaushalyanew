@@ -19,10 +19,10 @@ const paymentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    bankTxnId: {
-        type: String,
-        required: true
-    },
+   // bankTxnId: {
+     //   type: String,
+     //   required: true
+//},
     orderId: {
         type: String,
         required: true
@@ -43,10 +43,10 @@ const paymentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    mid: {
-        type: String,
-        required: true
-    },
+    //mid: {
+       // type: String,
+        //required: true
+    //},
     paymentMode: {
         type: String,
         required: true

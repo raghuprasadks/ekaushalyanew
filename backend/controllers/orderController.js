@@ -6,7 +6,7 @@ const sendEmail = require('../utils/sendEmail');
 
 // Create New Order
 exports.newOrder = asyncErrorHandler(async (req, res, next) => {
-
+console.log("order controller :newOrder")
     const {
         shippingInfo,
         orderItems,
@@ -28,7 +28,7 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
         paidAt: Date.now(),
         user: req.user._id,
     });
-
+/**
     await sendEmail({
         email: req.user.email,
         templateId: process.env.SENDGRID_ORDER_TEMPLATEID,
@@ -40,7 +40,7 @@ exports.newOrder = asyncErrorHandler(async (req, res, next) => {
             oid: order._id,
         }
     });
-
+ */
     res.status(201).json({
         success: true,
         order,

@@ -3,6 +3,7 @@ import { ALL_ORDERS_FAIL, ALL_ORDERS_REQUEST, ALL_ORDERS_SUCCESS, CLEAR_ERRORS, 
 
 // New Order
 export const newOrder = (order) => async (dispatch) => {
+    console.log('new order #')
     try {
         dispatch({ type: NEW_ORDER_REQUEST });
 
@@ -69,10 +70,13 @@ export const getOrderDetails = (id) => async (dispatch) => {
 
 // Get Payment Status
 export const getPaymentStatus = (id) => async (dispatch) => {
+    console.log("orderaction :: getPaymentStatus :: ",id)
     try {
         dispatch({ type: PAYMENT_STATUS_REQUEST });
 
         const { data } = await axios.get(`/api/v1/payment/status/${id}`);
+
+        console.log("data :### ",data)
 
         dispatch({
             type: PAYMENT_STATUS_SUCCESS,

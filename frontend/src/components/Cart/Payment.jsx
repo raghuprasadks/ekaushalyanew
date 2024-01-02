@@ -1,15 +1,6 @@
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PriceSidebar from './PriceSidebar';
-import Stepper from './Stepper';
-// import {
-//     CardNumberElement,
-//     CardCvcElement,
-//     CardExpiryElement,
-//     useStripe,
-//     useElements,
-// } from '@stripe/react-stripe-js';
 import { clearErrors } from '../../actions/orderAction';
 import { useSnackbar } from 'notistack';
 import { post } from '../../utils/paytmForm';
@@ -18,21 +9,20 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import MetaData from '../Layouts/MetaData';
+import PriceSidebar from './PriceSidebar';
+import Stepper from './Stepper';
+import { useNavigate } from "react-router-dom";
 
 const Payment = () => {
+    const [payDisable, setPayDisable] = useState(false);
+    const [error, setError] = useState(null);
+    const [paymentMethod, setPaymentMethod] = useState('');
 
     const dispatch = useDispatch();
-    // const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
-    // const stripe = useStripe();
-    // const elements = useElements();
-    // const paymentBtn = useRef(null);
-
-    const [payDisable, setPayDisable] = useState(false);
-
     const { shippingInfo, cartItems } = useSelector((state) => state.cart);
     const { user } = useSelector((state) => state.user);
-    const { error } = useSelector((state) => state.newOrder);
+    const { error: newOrderError } = useSelector((state) => state.newOrder);
 
     const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
@@ -42,90 +32,82 @@ const Payment = () => {
         phoneNo: shippingInfo.phoneNo,
     };
 
-    // const order = {
-    //     shippingInfo,
-    //     orderItems: cartItems,
-    //     totalPrice,
-    // }
+    const navigate=useNavigate()
+
+    const initPayment = (data) => {
+		const options = {
+			key: data.razorpayOptions.key,
+			amount: data.amount,
+			currency: data.currency,			
+			order_id: data.razorpayOptions.orderId,
+			handler: async (response) => {
+				try {
+					const verifyUrl = "/api/v1/callback";
+					const { data } = await axios.post(verifyUrl, response);
+					console.log(data);
+                    let url = `/order/${data.orderid}`
+                    navigate(url)
+				} catch (error) {
+					console.log(error);
+				}
+			}
+		};
+		const rzp1 = new window.Razorpay(options);
+		rzp1.open();
+	};
+
 
     const submitHandler = async (e) => {
         e.preventDefault();
-
-        // paymentBtn.current.disabled = true;
+    
         setPayDisable(true);
-
+    
         try {
             const config = {
                 headers: {
                     "Content-Type": "application/json",
                 },
             };
-
+    
             const { data } = await axios.post(
-                '/api/v1/payment/process',
+                `/api/v1/process/payment`,
                 paymentData,
                 config,
             );
+    
+            console.log('Full Data from the server:', data);
 
-            let info = {
-                action: "https://securegw-stage.paytm.in/order/process",
-                params: data.paytmParams
-            }
+if (data.razorpayOptions) {
+   // console.log('razorpayOptions found:', data.razorpayOptions);
+/**
+    const razorpayOptions = data.razorpayOptions;
+    const rzp = new window.Razorpay({
+        key: razorpayOptions.key,
+        amount: razorpayOptions.amount,
+        currency: razorpayOptions.currency,
+        order_id: razorpayOptions.orderId,
+    });
+    rzp.open();
+     */
+    initPayment(data)
+} else {
+    console.error('razorpayOptions is undefined');
+}
 
-            post(info)
-
-            // if (!stripe || !elements) return;
-
-            // const result = await stripe.confirmCardPayment(client_secret, {
-            //     payment_method: {
-            //         card: elements.getElement(CardNumberElement),
-            //         billing_details: {
-            //             name: user.name,
-            //             email: user.email,
-            //             address: {
-            //                 line1: shippingInfo.address,
-            //                 city: shippingInfo.city,
-            //                 country: shippingInfo.country,
-            //                 state: shippingInfo.state,
-            //                 postal_code: shippingInfo.pincode,
-            //             },
-            //         },
-            //     },
-            // });
-
-            // if (result.error) {
-            //     paymentBtn.current.disabled = false;
-            //     enqueueSnackbar(result.error.message, { variant: "error" });
-            // } else {
-            //     if (result.paymentIntent.status === "succeeded") {
-
-            //         order.paymentInfo = {
-            //             id: result.paymentIntent.id,
-            //             status: result.paymentIntent.status,
-            //         };
-
-            //         dispatch(newOrder(order));
-            //         dispatch(emptyCart());
-
-            //         navigate("/order/success");
-            //     } else {
-            //         enqueueSnackbar("Processing Payment Failed!", { variant: "error" });
-            //     }
-            // }
-
+            
         } catch (error) {
-            // paymentBtn.current.disabled = false;
             setPayDisable(false);
-            enqueueSnackbar(error, { variant: "error" });
+            setError(error.message || 'An error occurred');
         }
     };
+    
 
     useEffect(() => {
-        if (error) {
+        if (newOrderError) {
             dispatch(clearErrors());
-            enqueueSnackbar(error, { variant: "error" });
+            enqueueSnackbar(newOrderError, { variant: "error" });
         }
-    }, [dispatch, error, enqueueSnackbar]);
+    }, [dispatch, newOrderError, enqueueSnackbar]);
 
 
     return (
@@ -149,6 +131,7 @@ const Payment = () => {
                                             aria-labelledby="payment-radio-group"
                                             defaultValue="paytm"
                                             name="payment-radio-button"
+                                            onChange={(e)=> setPaymentMethod(e.target.value)}
                                         >
                                             <FormControlLabel
                                                 value="paytm"
@@ -166,7 +149,7 @@ const Payment = () => {
                                                 label={
                                                     <div className="flex items-center gap-4">
                                                         <img draggable="false" className="h-6 w-6 object-contain" src="https://rukminim1.flixcart.com/www/96/96/promos/01/09/2020/a07396d4-0543-4b19-8406-b9fcbf5fd735.png" alt="Paytm Logo" />
-                                                        <span>razorpay</span>
+                                                        <span>RazorPay</span>
                                                     </div>
                                                 }
                                             />

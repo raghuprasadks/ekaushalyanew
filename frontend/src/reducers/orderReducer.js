@@ -1,6 +1,8 @@
 import { NEW_ORDER_REQUEST, NEW_ORDER_SUCCESS, NEW_ORDER_FAIL, CLEAR_ERRORS, MY_ORDERS_FAIL, MY_ORDERS_SUCCESS, MY_ORDERS_REQUEST, PAYMENT_STATUS_REQUEST, PAYMENT_STATUS_SUCCESS, PAYMENT_STATUS_FAIL, ORDER_DETAILS_REQUEST, ORDER_DETAILS_SUCCESS, ORDER_DETAILS_FAIL, ALL_ORDERS_REQUEST, ALL_ORDERS_SUCCESS, ALL_ORDERS_FAIL, UPDATE_ORDER_REQUEST, DELETE_ORDER_REQUEST, UPDATE_ORDER_SUCCESS, DELETE_ORDER_SUCCESS, UPDATE_ORDER_FAIL, DELETE_ORDER_FAIL, UPDATE_ORDER_RESET, DELETE_ORDER_RESET } from "../constants/orderConstants";
 
 export const newOrderReducer = (state = {}, { type, payload }) => {
+    console.log("newOrderReducer:type ",type)
+    console.log("payload ",payload)    
     switch (type) {
         case NEW_ORDER_REQUEST:
             return {
@@ -28,6 +30,8 @@ export const newOrderReducer = (state = {}, { type, payload }) => {
 };
 
 export const myOrdersReducer = (state = { orders: [] }, { type, payload }) => {
+    console.log("myOrdersReducer:type ",type)
+    console.log("payload ",payload)
     switch (type) {
         case MY_ORDERS_REQUEST:
             return {
@@ -54,6 +58,8 @@ export const myOrdersReducer = (state = { orders: [] }, { type, payload }) => {
 };
 
 export const paymentStatusReducer = (state = { txn: {} }, { type, payload }) => {
+    console.log("paymentStatusReducer:type ",type)
+    console.log("payload ",payload)
     switch (type) {
         case PAYMENT_STATUS_REQUEST:
             return {
