@@ -31,6 +31,7 @@ const PrimaryDropDownMenu = ({ setTogglePrimaryDropDown, user }) => {
     }
 
     const navs = [
+       /**
         {
             title: "Supercoin Zone",
             icon: <OfflineBoltIcon sx={{ fontSize: "18px" }} />,
@@ -41,6 +42,7 @@ const PrimaryDropDownMenu = ({ setTogglePrimaryDropDown, user }) => {
             icon: <AddCircleIcon sx={{ fontSize: "18px" }} />,
             redirect: "/",
         },
+         */
         {
             title: "Orders",
             icon: <ShoppingBagIcon sx={{ fontSize: "18px" }} />,
@@ -51,6 +53,7 @@ const PrimaryDropDownMenu = ({ setTogglePrimaryDropDown, user }) => {
             icon: <FavoriteIcon sx={{ fontSize: "18px" }} />,
             redirect: "/wishlist",
         },
+        /**
         {
             title: "My Chats",
             icon: <ChatIcon sx={{ fontSize: "18px" }} />,
@@ -71,6 +74,7 @@ const PrimaryDropDownMenu = ({ setTogglePrimaryDropDown, user }) => {
             icon: <NotificationsIcon sx={{ fontSize: "18px" }} />,
             redirect: "/",
         },
+         */
     ]
 
     return (

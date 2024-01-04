@@ -204,6 +204,7 @@ const ProductDetails = () => {
                                     {/* <!-- price desc --> */}
 
                                     {/* <!-- banks offers --> */}
+                                    {/**
                                     <p className="text-md font-medium">Available offers</p>
                                     {Array(3).fill("").map((el, i) => (
                                         <p className="text-sm flex items-center gap-1" key={i}>
@@ -211,23 +212,29 @@ const ProductDetails = () => {
                                             <span className="font-medium ml-2">Bank Offer</span> 15% Instant discount on first Flipkart Pay Later order of 500 and above <Link className="text-primary-blue font-medium" to="/">T&C</Link>
                                         </p>
                                     ))}
+                                     */}
                                     {/* <!-- banks offers --> */}
 
                                     {/* <!-- warranty & brand --> */}
+                                    {/**
                                     <div className="flex gap-8 mt-2 items-center text-sm">
                                         <img draggable="false" className="w-20 h-8 p-0.5 border object-contain" src={product.brand?.logo.url} alt={product.brand && product.brand.name} />
                                         <span>{product.warranty} Year Warranty <Link className="font-medium text-primary-blue" to="/">Know More</Link></span>
                                     </div>
+                                     */}
                                     {/* <!-- warranty & brand --> */}
 
                                     {/* <!-- delivery details --> */}
+                                    {/**
                                     <div className="flex gap-16 mt-4 items-center text-sm font-medium">
                                         <p className="text-gray-500">Delivery</p>
                                         <span>Delivery by {getDeliveryDate()}</span>
                                     </div>
+                                     */}
                                     {/* <!-- delivery details --> */}
 
                                     {/* <!-- highlights & services details --> */}
+
                                     <div className="flex flex-col sm:flex-row justify-between">
                                         {/* <!-- highlights details --> */}
                                         <div className="flex gap-16 mt-4 items-stretch text-sm">
@@ -244,6 +251,7 @@ const ProductDetails = () => {
                                         {/* <!-- highlights details --> */}
 
                                         {/* <!-- services details --> */}
+                                        {/**
                                         <div className="flex gap-16 mt-4 mr-6 items-stretch text-sm">
                                             <p className="text-gray-500 font-medium">Services</p>
                                             <ul className="flex flex-col gap-2">
@@ -258,6 +266,7 @@ const ProductDetails = () => {
                                                 </li>
                                             </ul>
                                         </div>
+                                         */}
                                         {/* <!-- services details --> */}
                                     </div>
                                     {/* <!-- highlights & services details --> */}
@@ -270,9 +279,11 @@ const ProductDetails = () => {
                                     {/* <!-- seller details --> */}
 
                                     {/* <!-- flipkart plus banner --> */}
+                                    {/**
                                     <div className="sm:w-1/2 mt-4 border">
                                         <img draggable="false" className="w-full h-full object-contain" src="https://rukminim1.flixcart.com/lockin/763/305/images/promotion_banner_v2_active.png" alt="" />
                                     </div>
+                                     */}
                                     {/* <!-- flipkart plus banner --> */}
 
                                     {/* <!-- description details --> */}

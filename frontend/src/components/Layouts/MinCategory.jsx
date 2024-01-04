@@ -2,6 +2,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link } from 'react-router-dom';
 
 const categories = [
+    /**
     "Electronics",
     "TVs & Appliances",
     "Men",
@@ -12,6 +13,7 @@ const categories = [
     "Flights",
     "Offer Zone",
     "Grocery",
+     */
 ]
 
 const MinCategory = () => {
