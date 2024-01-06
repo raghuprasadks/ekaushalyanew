@@ -12,6 +12,7 @@ import MetaData from '../Layouts/MetaData';
 import PriceSidebar from './PriceSidebar';
 import Stepper from './Stepper';
 import { useNavigate } from "react-router-dom";
+import razorpaylogo from '../../assets/images/razorpay.png'
 
 const Payment = () => {
     const [payDisable, setPayDisable] = useState(false);
@@ -25,6 +26,7 @@ const Payment = () => {
     const { error: newOrderError } = useSelector((state) => state.newOrder);
 
     const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const btnvalue = totalPrice>0?`Pay ₹${totalPrice.toLocaleString()}`:'Enroll'
 
     const paymentData = {
         amount: Math.round(totalPrice),
@@ -77,6 +79,7 @@ const Payment = () => {
     
             console.log('Full Data from the server:', data);
 
+if(data.razorpayOptions.amount>0){
 if (data.razorpayOptions) {
    // console.log('razorpayOptions found:', data.razorpayOptions);
 /**
@@ -90,8 +93,18 @@ if (data.razorpayOptions) {
     rzp.open();
      */
     initPayment(data)
-} else {
-    console.error('razorpayOptions is undefined');
+}} else {
+    console.error('Payment: else');
+    try {
+        console.log("data ::",data)
+        let verifyUrl = "/api/v1/callback";
+        let  resdata  = await axios.post(verifyUrl, data);
+        console.log("resdata##",resdata);
+        let url = `/order/${resdata.data.orderid}`
+        navigate(url)
+    } catch (error) {
+        console.log(error);
+    }
 }
 
             
@@ -126,6 +139,7 @@ if (data.razorpayOptions) {
                             <div className="w-full bg-white">
 
                                 <form onSubmit={(e) => submitHandler(e)} autoComplete="off" className="flex flex-col justify-start gap-2 w-full mx-8 my-4 overflow-hidden">
+                                    {/**
                                     <FormControl>
                                         <RadioGroup
                                             aria-labelledby="payment-radio-group"
@@ -133,6 +147,7 @@ if (data.razorpayOptions) {
                                             name="payment-radio-button"
                                             onChange={(e)=> setPaymentMethod(e.target.value)}
                                         >
+                                            
                                             <FormControlLabel
                                                 value="paytm"
                                                 control={<Radio />}
@@ -143,21 +158,23 @@ if (data.razorpayOptions) {
                                                     </div>
                                                 }
                                             />
+                                             
                                             <FormControlLabel
                                                 value="razorpay"
                                                 control={<Radio />}
                                                 label={
                                                     <div className="flex items-center gap-4">
-                                                        <img draggable="false" className="h-6 w-6 object-contain" src="https://rukminim1.flixcart.com/www/96/96/promos/01/09/2020/a07396d4-0543-4b19-8406-b9fcbf5fd735.png" alt="Paytm Logo" />
+                                                        <img draggable="false" className="h-6 w-6 object-contain" src={razorpaylogo} alt="RazorPay Logo" />
                                                         <span>RazorPay</span>
                                                     </div>
                                                 }
                                             />
                                         </RadioGroup>
                                     </FormControl>
+                                */}
 
-                                    <input type="submit" value={`Pay ₹${totalPrice.toLocaleString()}`} disabled={payDisable ? true : false} className={`${payDisable ? "bg-primary-grey cursor-not-allowed" : "bg-primary-orange cursor-pointer"} w-1/2 sm:w-1/4 my-2 py-3 font-medium text-white shadow hover:shadow-lg rounded-sm uppercase outline-none`} />
-
+                                   {/* <input type="submit" value={`Pay ₹${totalPrice.toLocaleString()}`} disabled={payDisable ? true : false} className={`${payDisable ? "bg-primary-grey cursor-not-allowed" : "bg-primary-orange cursor-pointer"} w-1/2 sm:w-1/4 my-2 py-3 font-medium text-white shadow hover:shadow-lg rounded-sm uppercase outline-none`} /> */}
+                                    <input type="submit" value={btnvalue} disabled={payDisable ? true : false} className={`${payDisable ? "bg-primary-grey cursor-not-allowed" : "bg-primary-orange cursor-pointer"} w-1/2 sm:w-1/4 my-2 py-3 font-medium text-white shadow hover:shadow-lg rounded-sm uppercase outline-none`} />
                                 </form>
 
                                 {/* stripe form */}

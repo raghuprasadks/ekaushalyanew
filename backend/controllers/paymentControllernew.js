@@ -11,9 +11,9 @@ const razorpay = new Razorpay({
 
 
 exports.processPayment = asyncErrorHandler(async (req, res, next) => {
-   console.log("processPayment")
+   
     const { amount, email, phoneNo } = req.body;
-
+    console.log("processPayment::",req.body)
     const options = {
         amount: amount * 100, 
         currency: 'INR',
@@ -25,8 +25,13 @@ exports.processPayment = asyncErrorHandler(async (req, res, next) => {
         },
     };
 
+    
     try {
-        const order = await new Promise((resolve, reject) => {
+
+        if(amount >0){   
+            console.log("if::#")     
+        
+        order = await new Promise((resolve, reject) => {
             razorpay.orders.create(options, (err, order) => {
                 if (err) {
                     reject(new ErrorHandler('Razorpay Order Creation Failed', 500));
@@ -35,14 +40,21 @@ exports.processPayment = asyncErrorHandler(async (req, res, next) => {
                 }
             });
         });
-
+    }else{
+        console.log('else##',options)
+        order ={
+            id:options.receipt,
+            amount:0,
+            currency: 'INR',            
+        }
+    }
         const razorpayPayment = new Payment({
             orderId: order.id,
-            amount: order.amount / 100,
+            amount: order.amount>0?order.amount / 100:0,
             txnDate: new Date(),
             refundAmt: '0',
             paymentMode: 'Online', 
-            bankName: 'SBI',
+            bankName: 'Razorpay',
             gatewayName: 'Razorpay', 
             txnType: 'Payment', 
             txnAmount: amount, 
@@ -54,8 +66,12 @@ exports.processPayment = asyncErrorHandler(async (req, res, next) => {
             }
            
         });
+
+        console.log('razor pay payment ::',razorpayPayment)
         
         await razorpayPayment.save();
+
+        console.log("after save::,order ##",order)
 
        // res.redirect(`${req.protocol}://${req.get("host")}/order/${order.orderId}`)
         
@@ -63,7 +79,7 @@ exports.processPayment = asyncErrorHandler(async (req, res, next) => {
             razorpayOptions:{
                 key:process.env.RAZORPAY_KEY_ID,
             orderId: order.id,
-            amount: order.amount / 100,
+            amount: order.amount>0?order.amount/100:0,
             currency: order.currency,
             }
         });
@@ -80,7 +96,7 @@ exports.processPayment = asyncErrorHandler(async (req, res, next) => {
 exports.razorpayCallback = asyncErrorHandler(async (req, res, next) => {
     console.log("razorpayCallback####")
     console.log("request body ",req.body)
-    console.log("order id ",req.body.razorpay_order_id)
+    //console.log("order id ",req.body.razorpay_order_id)
     //let url = `http://${req.get("host")}/order/${req.body.razorpay_order_id}`
     //console.log("url ##",url)
     //res.setHeader("Content-Type", "text/html")
@@ -89,7 +105,13 @@ exports.razorpayCallback = asyncErrorHandler(async (req, res, next) => {
     //res.end()
     //window.location.href = url
     //return
-    res.status(200).json({ orderid: req.body.razorpay_order_id });
+    
+    if (req.body.razorpay_order_id)
+      neworderid =req.body.razorpay_order_id
+    else
+        neworderid=req.body.razorpayOptions.orderId
+    console.log("new order id ",neworderid)
+    res.status(200).json({ orderid: neworderid });
 });
 
 /**
@@ -115,6 +137,7 @@ exports.getRazorpayPaymentStatus = asyncErrorHandler(async (req, res, next) => {
  */
 exports.getRazorpayPaymentStatus = asyncErrorHandler(async (req, res, next) => {
 
+    console.log("getRazorpayPaymentStatus##",req.params.id)
     const payment = await Payment.findOne({ orderId: req.params.id });
 
     if (!payment) {
