@@ -103,11 +103,15 @@ const ProductDetails = () => {
 
     const goToCart = () => {
         navigate('/cart');
+       
     }
 
     const buyNow = () => {
         addToCartHandler();
-        navigate('/shipping');
+       // navigate('/shipping');
+       navigate("/process/payment");
+       
+
     }
 
     useEffect(() => {

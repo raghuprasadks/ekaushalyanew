@@ -31,11 +31,12 @@ const Shipping = () => {
 
     const shippingSubmit = (e) => {
         e.preventDefault();
-
+        
         if (phoneNo.length < 10 || phoneNo.length > 10) {
             enqueueSnackbar("Invalid Phone Number", { variant: "error" });
             return;
         }
+        
         dispatch(saveShippingInfo({ address, city, country, state, pincode, phoneNo }));
         navigate("/order/confirm");
     }

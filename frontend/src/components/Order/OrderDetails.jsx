@@ -1,100 +1,115 @@
 import { useSnackbar } from 'notistack';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { clearErrors, getOrderDetails } from '../../actions/orderAction';
+import { getProductDetails } from '../../actions/productAction';
 import Loader from '../Layouts/Loader';
-import TrackStepper from './TrackStepper';
-import MinCategory from '../Layouts/MinCategory';
 import MetaData from '../Layouts/MetaData';
 
 const OrderDetails = () => {
+  const dispatch = useDispatch();
+  const params = useParams();
+  const { order, error, loading } = useSelector((state) => state.orderDetails);
+  const { enqueueSnackbar } = useSnackbar();
+  const { product, loading: productLoading, error: productError } = useSelector((state) => state.productDetails);
 
-    const dispatch = useDispatch();
-    const { enqueueSnackbar } = useSnackbar();
-    const params = useParams();
+  const [videoUrl,setVideoUrl]=useState()
+  //setVideoUrl(product.introductoryvideo)
 
-    const { order, error, loading } = useSelector((state) => state.orderDetails);
+  useEffect(() => {
+    console.log('use effect 1')
+    if (error) {
+      enqueueSnackbar(error, { variant: 'error' });
+      dispatch(clearErrors());
+    }
 
-    useEffect(() => {
-        if (error) {
-            enqueueSnackbar(error, { variant: "error" });
-            dispatch(clearErrors());
-        }
-        dispatch(getOrderDetails(params.id));
-    }, [dispatch, error, params.id, enqueueSnackbar]);
+    dispatch(getOrderDetails(params.id));
+  }, [dispatch, error, params.id, enqueueSnackbar]);
 
-    return (
-        <>
-            <MetaData title="Order Details | Flipkart" />
+  useEffect(() => {
+ 
+    console.log('use effect 2',order)
+    if (order && order.orderItems && order.orderItems.length > 0) {
+      const productId = order.orderItems[0].product;
+      console.log('product id ',productId)
+      if (productId) {
+        dispatch(getProductDetails(productId));
+        setVideoUrl(`https://www.youtube.com/embed/${product.introductoryvideo}`)
+      }
+    }
+  }, [dispatch, order]);
 
-            <MinCategory />
-            <main className="w-full mt-14 sm:mt-4">
-                {loading ? <Loader /> : (
-                    <>
-                        {order && order.user && order.shippingInfo && (
-                            <div className="flex flex-col gap-4 max-w-6xl mx-auto">
+  if (loading) {
+    return <Loader />;
+  }
 
-                                <div className="flex bg-white shadow rounded-sm min-w-full">
-                                    <div className="sm:w-1/2 border-r">
-                                        <div className="flex flex-col gap-3 my-8 mx-10">
-                                            <h3 className="font-medium text-lg">Delivery Address</h3>
-                                            <h4 className="font-medium">{order.user.name}</h4>
-                                            <p className="text-sm">{`${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state} - ${order.shippingInfo.pincode}`}</p>
-                                            <div className="flex gap-2 text-sm">
-                                                <p className="font-medium">Email</p>
-                                                <p>{order.user.email}</p>
-                                            </div>
-                                            <div className="flex gap-2 text-sm">
-                                                <p className="font-medium">Phone Number</p>
-                                                <p>{order.shippingInfo.phoneNo}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+  if (!order || !order.orderItems || order.orderItems.length === 0) {
+    return <div>No order data available</div>;
+  }
 
-                                {order.orderItems && order.orderItems.map((item) => {
+  const renderVideo = (url) => (
+   // console.log("rendervideo ",url)
+    //setVideoUrl(url)   
+  <iframe width="100%" height="315" src={url} title="Video Player" allowFullScreen />
 
-                                    const { _id, image, name, price, quantity } = item;
+  )
 
-                                    return (
-                                        <div className="flex flex-col sm:flex-row min-w-full shadow rounded-sm bg-white px-2 py-5" key={_id}>
+  if (error || productError) {
+    return <div>Error loading data</div>;
+  }
 
-                                            <div className="flex flex-col sm:flex-row sm:w-1/2 gap-2">
-                                                <div className="w-full sm:w-32 h-20">
-                                                    <img draggable="false" className="h-full w-full object-contain" src={image} alt={name} />
-                                                </div>
-                                                <div className="flex flex-col gap-1 overflow-hidden">
-                                                    <p className="text-sm">{name.length > 60 ? `${name.substring(0, 60)}...` : name}</p>
-                                                    <p className="text-xs text-gray-600 mt-2">Quantity: {quantity}</p>
-                                                    <p className="text-xs text-gray-600">Price: ₹{price.toLocaleString()}</p>
-                                                    <span className="font-medium">Total: ₹{(quantity * price).toLocaleString()}</span>
-                                                </div>
-                                            </div>
+  if (productLoading || !product) {
+    return <Loader />;
+  }
+  
+  return (
+    <>
+      <MetaData title="Order Details | Flipkart" />
+      <main className="w-full mt-14 sm:mt-4 flex gap-4 max-w-6xl mx-auto">
+        <div className="w-1/2">
+          {order && order.orderItems && order.orderItems.length > 0 && order.orderItems[0].product && (
+            <>
+              <h1 className="px-6 py-4 border-b text-2xl font-medium">
+                {order.orderItems[0].product.name}
+              </h1>
+              <div className="p-6">
+            {/**   {product && product.introductoryvideo && renderVideo(`https://www.youtube.com/embed/${product.introductoryvideo}`)}  */}
+              
+              <iframe width="100%" height="315" src={videoUrl} title="Video Player" allowFullScreen />
 
-                                            <div className="flex flex-col w-full sm:w-1/2">
-                                                <h3 className="font-medium sm:text-center">Order Status</h3>
-                                                <TrackStepper
-                                                    orderOn={order.createdAt}
-                                                    shippedAt={order.shippedAt}
-                                                    deliveredAt={order.deliveredAt}
-                                                    activeStep={
-                                                        order.orderStatus === "Delivered" ? 2 : order.orderStatus === "Shipped" ? 1 : 0
-                                                    }
-                                                />
-                                            </div>
+              </div>
+            </>
+          )}
+        </div>
 
-                                        </div>
-                                    )
-                                })
-                                }
-                            </div>
-                        )}
-                    </>
-                )}
-            </main>
-        </>
-    );
-};
+        <div className="w-1/2">
+          {product && product.specifications && product.specifications.length > 0 && (
+            <div>
+              <h2 className="text-xl font-medium mb-4">Specifications Videos</h2>
+              {product.specifications.map((spec, i) => (
+                <div key={i} className="mb-4">
+                  <h3 className="text-lg font-medium">{spec.title}</h3>
+                  {spec.videourl && (
+                    <button
+                      onClick={() => {
+                       let updVideoUrl = `https://www.youtube.com/embed/${spec.videourl}`;
+                       // dispatch({ type: 'SET_CURRENT_VIDEO', payload: videoUrl });
+                       setVideoUrl(updVideoUrl)
+                    }}
+                      className="text-primary-blue cursor-pointer"
+                    >
+                      Watch Video
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+    </>
+  );
+                    }
 
 export default OrderDetails;

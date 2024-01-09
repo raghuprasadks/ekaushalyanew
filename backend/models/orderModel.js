@@ -1,30 +1,30 @@
 const mongoose = require('mongoose');
-
+// changed required true to false by raghu
 const orderSchema = new mongoose.Schema({
     shippingInfo: {
         address: {
             type: String,
-            required: true
+            required: false
         },
         city: {
             type: String,
-            required: true
+            required: false
         },
         state: {
             type: String,
-            required: true
+            required: false
         },
         country: {
             type: String,
-            required: true
+            required: false
         },
         pincode: {
             type: Number,
-            required: true
+            required: false
         },
         phoneNo: {
             type: Number,
-            required: true
+            required: false
         },
     },
     orderItems: [
